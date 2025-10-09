@@ -1,3 +1,11 @@
+/*
+    Examples:
+    View name:  apiViewUsers
+    Table name: apiUsers
+    Type name:  User
+*/
+
+
 //generate the plural name from the view name.  apiViewUsers => Users
 function generatePluralNameFromView(viewName) {
     let name = viewName
@@ -73,6 +81,15 @@ function generateViewNameFromType(typeName) {
     return name
 }
 
+function generateTableNameFromType(typeName) {
+    let name = typeName
+    //the start of the table name will be like 'api'
+    name = 'api' + name
+    //pluralise it
+    name = pluraliseType(name)
+    return name
+}
+
 function pluraliseType(typeName) {
     let name = typeName
     //handle ones ending y
@@ -84,4 +101,12 @@ function pluraliseType(typeName) {
     return name
 }
 
-module.exports = { generatePluralNameFromView, generateTypeNameFromView, generateTypeNameFromTable, pluraliseType, generateViewNameFromType, generateViewNameFromTable };
+module.exports = { 
+    generatePluralNameFromView, 
+    generateTypeNameFromView, 
+    generateTypeNameFromTable, 
+    pluraliseType, 
+    generateViewNameFromType, 
+    generateTableNameFromType,
+    generateViewNameFromTable 
+};
