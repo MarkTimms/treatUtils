@@ -1,7 +1,7 @@
-function getViewIDField(fromViewFields) {
+function getIDField(fromEntityDBFields) {
     let idField
     //it is the field with the ordinal position 1
-    [...fromViewFields].forEach(([fieldName, fieldProperties]) => {
+    [...fromEntityDBFields].forEach(([fieldName, fieldProperties]) => {
         if(fieldProperties.ordinalPosition === 1) {
             idField = fieldName;
         }
@@ -9,4 +9,4 @@ function getViewIDField(fromViewFields) {
     return idField;
 }
 
-module.exports = getViewIDField;
+module.exports = getIDField;

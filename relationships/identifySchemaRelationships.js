@@ -105,7 +105,7 @@ function checkEndingRelationship(relationships, typeName, fieldName, ordinalPosi
         if(typeName1) {
             if(process.env.VERBOSE === 'true') console.log(`${typeName} has field ${fieldName}, and type with a primary key matching the ending of this field was found: ${typeName1}. Adding relationships`)  
             //get the ID field name of the matching view
-            const idFieldName1 = require('../getViewIDField')(viewFields1);
+            const idFieldName1 = require('../getIDField')(viewFields1);
             //add the relationship to our maps
             relationships = addRelationshipPair(relationships, typeName, fieldName, typeName1, idFieldName1);
         } 
@@ -124,7 +124,7 @@ function checkExactRelationship(relationships, typeName, fieldName, ordinalPosit
         if(typeName1) {
             if(process.env.VERBOSE === 'true') console.log(`${typeName} contains candidate exact relationship field ${fieldName}, and type with this primary key was found: ${typeName1}. Adding relationships`)  
             //get the ID field name of the matching view
-            const idFieldName1 = require('../getViewIDField')(viewFields1);
+            const idFieldName1 = require('../getIDField')(viewFields1);
             //add the relationship to our maps
             relationships = addRelationshipPair(relationships, typeName, fieldName, typeName1, idFieldName1);
         } 
