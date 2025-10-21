@@ -26,7 +26,11 @@ Relationships object looks like this:
             storeTypeID: {
                 type: StoreType,
                 name: StoreType,
-            }
+            },
+            storeRegionID: {
+                type: StoreRegion,
+                name: StoreRegion,
+            },
         },
         User: {
             defaultStoreID: {
@@ -92,7 +96,7 @@ function identifySchemaRelationships(dbSchemaViews) {
         })
     })
     //output a summary of the relationships found
-    if(process.env.VERBOSE === 'true') console.log(`Found relationships: `, JSON.stringify(relationships, null, 2))
+    if(process.env.LOGGING === 'verbose') console.log(`Found relationships: `, JSON.stringify(relationships, null, 2))
     return relationships
 }
 
@@ -103,7 +107,7 @@ function checkEndingRelationship(relationships, typeName, fieldName, ordinalPosi
         const [typeName1, viewFields1] = findViewWithPrimaryKeyMatchingEnding(views, fieldName);
         //did we find one?
         if(typeName1) {
-            if(process.env.VERBOSE === 'true') console.log(`${typeName} has field ${fieldName}, and type with a primary key matching the ending of this field was found: ${typeName1}. Adding relationships`)  
+            if(process.env.LOGGING === 'verbose') console.log(`${typeName} has field ${fieldName}, and type with a primary key matching the ending of this field was found: ${typeName1}. Adding relationships`)  
             //get the ID field name of the matching view
             const idFieldName1 = require('../getIDField')(viewFields1);
             //add the relationship to our maps
@@ -122,7 +126,7 @@ function checkExactRelationship(relationships, typeName, fieldName, ordinalPosit
         const [typeName1, viewFields1] = findViewWithPrimaryKey(views, fieldName);
         //did we find one?
         if(typeName1) {
-            if(process.env.VERBOSE === 'true') console.log(`${typeName} contains candidate exact relationship field ${fieldName}, and type with this primary key was found: ${typeName1}. Adding relationships`)  
+            if(process.env.LOGGING === 'verbose') console.log(`${typeName} contains candidate exact relationship field ${fieldName}, and type with this primary key was found: ${typeName1}. Adding relationships`)  
             //get the ID field name of the matching view
             const idFieldName1 = require('../getIDField')(viewFields1);
             //add the relationship to our maps
@@ -191,7 +195,7 @@ function addNNRelationship(nnRelationships, typeNameN, fieldNameN, typeName1, id
 function decideNNRelationshipName(idFieldName, fieldName, typeName) {
     //if the id field of the parent type is the same as the field on the child type, we just pluralise the type name
     //eg Sites-->Facilities would be Facilities
-    console.log(`idFieldName is ${idFieldName} and fieldName is ${fieldName} so we just pluralise`)
+    //console.log(`idFieldName is ${idFieldName} and fieldName is ${fieldName} so we just pluralise`)
     if(idFieldName === fieldName) {
         return pluraliseType(typeName);
     }

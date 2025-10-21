@@ -11,7 +11,7 @@ function generatePluralNameFromView(viewName) {
     let name = viewName
     //the start of the view name will be like 'apiView' - replace this
     name = name.replace('apiView', '')
-    //if(process.env.VERBOSE === 'true') console.log(`View ${viewName} => query ${name}`)
+    //if(process.env.LOGGING === 'verbose') console.log(`View ${viewName} => query ${name}`)
     return name;
 }
 
@@ -42,7 +42,7 @@ function generateTypeNameFromView(viewName) {
     if(name.endsWith('s')) {
         name = name.slice(0, -1)
     }
-    //if(process.env.VERBOSE === 'true') console.log(`View ${viewName} => object ${name}`)
+    //if(process.env.LOGGING === 'verbose') console.log(`View ${viewName} => object ${name}`)
     return name;
 }
 
@@ -68,7 +68,7 @@ function generateTypeNameFrom(viewOrTableName, type) {
     if(name.endsWith('s')) {
         name = name.slice(0, -1)
     }
-    //if(process.env.VERBOSE === 'true') console.log(`View ${viewName} => object ${name}`)
+    //if(process.env.LOGGING === 'verbose') console.log(`View ${viewName} => object ${name}`)
     return name;
 }
 
