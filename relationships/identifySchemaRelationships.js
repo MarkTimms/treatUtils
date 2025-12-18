@@ -69,6 +69,7 @@ Relationships object looks like this:
     }
 }
 
+We should think about 1:1 relationships too in the future
 
 */
 
