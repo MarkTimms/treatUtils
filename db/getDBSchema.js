@@ -92,4 +92,4 @@ async function getViews(db) {
     return schema;
 }
 
-module.exports = { getDBSchema, };
+module.exports = getDBSchema;
