@@ -6,11 +6,11 @@ const { GraphQLDateTime, GraphQLDate } = require('graphql-scalars');
 function mapDBTypeToGraph(dbFieldType) {
     //get the data type of this field
     //if it exists
-    if(mappings[dbFieldType]) {
+    if (mappings[dbFieldType]) {
         return mappings[dbFieldType];
     } else {
         //return undefined, this should be handled by the calling fn
-        console.log(`PROBLEM: No mapping found for db field type ${dbFieldType} found`)
+        console.log(`PROBLEM: No mapping found for db field type ${dbFieldType}`)
         return undefined;
     }
 }
