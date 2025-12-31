@@ -28,6 +28,8 @@ async function getDBSchema(db) {
     return schema;
 }
 
+//to do - put a validation function here to check tenantID in every table, reserved field names are not used, etc
+
 async function getTables(db) {
     //return map of tables and their fields
     const columns = await db('INFORMATION_SCHEMA.COLUMNS')

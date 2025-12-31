@@ -1,5 +1,5 @@
 const assert = require('assert');
-const mapDBTypeToGraph = require('./mapDBTypeToGraph');
+const mapDBTypeToGraph = require('../mapDBTypeToGraph');
 const { GraphQLInt, GraphQLFloat } = require('graphql');
 const { GraphQLDateTime } = require('graphql-scalars');
 
