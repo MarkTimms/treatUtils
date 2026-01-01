@@ -9,7 +9,6 @@ const mandatoryTableFields = [
     'deletedByUserID',
     'deletedDate',
     'deleted',
-    'currentHistoryID',
     'tenantID',
 ]
 

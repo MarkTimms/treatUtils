@@ -26,36 +26,8 @@ async function getDBSchema(db) {
     console.log(`DB contains ${dbSchema.tables.size} tables (${totalTableFields} fields) and ${dbSchema.views.size} views (${totalViewFields} fields)`);
 
     //validate the schema
-    validateSchema(dbSchema);
+    require('./validateDBSchema')(dbSchema);
     return dbSchema;
-}
-
-function validateSchema(dbSchema) {
-    //check that every table has the mandatory fields
-    validateMandatoryFields(dbSchema);
-    validateReservedFieldNames(dbSchema);
-}
-
-function validateMandatoryFields(dbSchema) {
-    const mandatoryTableFields = require('treatUtils').fields.mandatoryTableFields;
-    dbSchema.tables.forEach((table) => {
-        mandatoryTableFields.forEach((mandatoryField) => {
-            if (!table.has(mandatoryField)) {
-                throw new Error(`Table ${table.key} is missing mandatory field ${mandatoryField}`);
-            }
-        })
-    })
-}
-
-function validateReservedFieldNames(dbSchema) {
-    const reservedFieldNames = require('treatUtils').fields.reservedFieldNames;
-    dbSchema.tables.forEach((table) => {
-        reservedFieldNames.forEach((reservedFieldName) => {
-            if (table.has(reservedFieldName)) {
-                throw new Error(`Table ${table.key} contains reserved field name ${reservedFieldName}`);
-            }
-        })
-    })
 }
 
 async function getTables(db) {
