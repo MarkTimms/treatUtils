@@ -76,7 +76,6 @@ function pruneFields(info, viewFields, n1Relevant, nnRelevant, subkey) {
     if (subkey) {
         parsedInfo = parsedInfo[subkey]
     }
-    if (process.env.LOGGING === 'verbose') console.log(`Extracted raw graphql fields list: `, parsedInfo);
     //fields is just the keys
     const fields = Object.keys(parsedInfo)
     //compile a list of fields to return, being a set to avoid duplicates
