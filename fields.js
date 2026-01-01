@@ -1,5 +1,18 @@
 const graphqlFields = require('graphql-fields');
 
+//every table in the schema should have these fields
+const mandatoryTableFields = [
+    'createdByUserID',
+    'createdDate',
+    'updatedByUserID',
+    'updatedDate',
+    'deletedByUserID',
+    'deletedDate',
+    'deleted',
+    'currentHistoryID',
+    'tenantID',
+]
+
 const nonInsertableCommonFields = [ //obviously dont forget to exclude the ID field too!
     'createdByUserID',
     'createdDate',
@@ -9,6 +22,7 @@ const nonInsertableCommonFields = [ //obviously dont forget to exclude the ID fi
     'deletedDate',
     'deleted',
     'currentHistoryID',
+    'tenantID',
 ]
 
 const nonUpdatableCommonFields = [ //obviously dont forget to exclude the ID field too!
@@ -20,12 +34,14 @@ const nonUpdatableCommonFields = [ //obviously dont forget to exclude the ID fie
     'deletedDate',
     //'deleted',
     'currentHistoryID',
+    'tenantID',
 ]
 
 const nonSelectableCommonFields = [ //fields that should not be selectable in queries
     //'deletedByUserID', - do not exclude these in the code.  Instead, mask them at the security layer.  Eg administrators may need to see these fields.  The UI will need to be able to show these as deleted records
     //'deletedDate',
     //'deleted',
+    'tenantID',
 ]
 
 const reservedFieldNames = [ //these should be checked when dbschema runs, to ensure they are not used as field names.  They will interfere when the graphql schema is built, as objects with these names can be passed in to perform things like sorting and pagination
@@ -128,4 +144,5 @@ module.exports = {
     nonUpdatableFields,
     nonSelectableCommonFields,
     reservedFieldNames,
+    mandatoryTableFields,
 }

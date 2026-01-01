@@ -14,21 +14,49 @@
  * @returns {Promise<*>} a promise that resolves to a Map (by tableName) of Maps (by columnName) of the schema
  */
 async function getDBSchema(db) {
-    const schema = {
+    const dbSchema = {
         tables: await getTables(db),
         views: await getViews(db),
     }
 
     //report on the total number of fields in each entity type
-    const totalTableFields = [...schema.tables.values()].reduce((sum, m) => sum + m.size, 0);
-    const totalViewFields = [...schema.views.values()].reduce((sum, m) => sum + m.size, 0);
+    const totalTableFields = [...dbSchema.tables.values()].reduce((sum, m) => sum + m.size, 0);
+    const totalViewFields = [...dbSchema.views.values()].reduce((sum, m) => sum + m.size, 0);
 
-    console.log(`DB contains ${schema.tables.size} tables (${totalTableFields} fields) and ${schema.views.size} views (${totalViewFields} fields)`);
+    console.log(`DB contains ${dbSchema.tables.size} tables (${totalTableFields} fields) and ${dbSchema.views.size} views (${totalViewFields} fields)`);
 
-    return schema;
+    //validate the schema
+    validateSchema(dbSchema);
+    return dbSchema;
 }
 
-//to do - put a validation function here to check tenantID in every table, reserved field names are not used, etc
+function validateSchema(dbSchema) {
+    //check that every table has the mandatory fields
+    validateMandatoryFields(dbSchema);
+    validateReservedFieldNames(dbSchema);
+}
+
+function validateMandatoryFields(dbSchema) {
+    const mandatoryTableFields = require('treatUtils').fields.mandatoryTableFields;
+    dbSchema.tables.forEach((table) => {
+        mandatoryTableFields.forEach((mandatoryField) => {
+            if (!table.has(mandatoryField)) {
+                throw new Error(`Table ${table.key} is missing mandatory field ${mandatoryField}`);
+            }
+        })
+    })
+}
+
+function validateReservedFieldNames(dbSchema) {
+    const reservedFieldNames = require('treatUtils').fields.reservedFieldNames;
+    dbSchema.tables.forEach((table) => {
+        reservedFieldNames.forEach((reservedFieldName) => {
+            if (table.has(reservedFieldName)) {
+                throw new Error(`Table ${table.key} contains reserved field name ${reservedFieldName}`);
+            }
+        })
+    })
+}
 
 async function getTables(db) {
     //return map of tables and their fields
