@@ -70,10 +70,15 @@ function nonInsertableFields(tableFields) {
  * @param {*} nnRelevant - the nn relationships in the view
  * @returns an array of fields to select
  */
-function pruneFields(info, viewFields, n1Relevant, nnRelevant) {
-    //get the fields selected in the graphql query
-    const fields = Object.keys(graphqlFields(info));
-
+function pruneFields(info, viewFields, n1Relevant, nnRelevant, subkey) {
+    let parsedInfo = graphqlFields(info)
+    //are we looking atr fields under a particular subkey?  For example for plural queries, we look under subkey 'data'
+    if (subkey) {
+        parsedInfo = parsedInfo[subkey]
+    }
+    if (process.env.LOGGING === 'verbose') console.log(`Extracted raw graphql fields list: `, parsedInfo);
+    //fields is just the keys
+    const fields = Object.keys(parsedInfo)
     //compile a list of fields to return, being a set to avoid duplicates
     const prunedFields = new Set();
     //check each field requested in the query
