@@ -5,13 +5,23 @@ function validateSchema(dbSchema) {
     validateVarcharTypes(dbSchema);
 }
 
-//check every table has the mandatory fields
+/**
+ * Validate that every table has the mandatory fields, they are the right type, and are nullable or not as specified
+ * @param {*} dbSchema 
+ */
 function validateMandatoryFields(dbSchema) {
     const mandatoryTableFields = require('../fields').mandatoryTableFields;
     dbSchema.tables.forEach((tableFields, tableName) => {
-        mandatoryTableFields.forEach((mandatoryField) => {
-            if (!tableFields.has(mandatoryField)) {
-                throw new Error(`Table ${tableName} is missing mandatory field ${mandatoryField}`);
+        mandatoryTableFields.forEach(([fieldName, dataType, isNullable]) => {
+            if (!tableFields.has(fieldName)) {
+                throw new Error(`Table ${tableName} is missing mandatory field ${fieldName}`);
+            }
+            const field = tableFields.get(fieldName);
+            if (field.dataType !== dataType) {
+                throw new Error(`Table ${tableName} has field ${fieldName} of type ${field.dataType}, expected ${dataType}`);
+            }
+            if (field.isNullable !== isNullable) {
+                throw new Error(`Table ${tableName} has field ${fieldName} of nullable ${field.isNullable}, expected ${isNullable}`);
             }
         })
     })

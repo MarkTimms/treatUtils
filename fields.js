@@ -1,15 +1,15 @@
 const graphqlFields = require('graphql-fields');
 
 //every table in the schema should have these fields
-const mandatoryTableFields = [
-    'createdByUserID',
-    'createdDate',
-    'updatedByUserID',
-    'updatedDate',
-    'deletedByUserID',
-    'deletedDate',
-    'deleted',
-    'tenantID',
+const mandatoryTableFields = [ //each entry is [fieldName, dataType, isNullable]
+    ['createdByUserID', 'int', false],
+    ['createdDate', 'datetime', false],
+    ['updatedByUserID', 'int', true], //null if not updated
+    ['updatedDate', 'datetime', true], //null if not updated
+    ['deletedByUserID', 'int', true], //null if not deleted
+    ['deletedDate', 'datetime', true], //null if not deleted
+    ['deleted', 'bit', false], //record is deleted or not, no in between!
+    ['tenantID', 'int', false], //all api fields must belong to a tenant
 ]
 
 const nonInsertableCommonFields = [ //obviously dont forget to exclude the ID field too!

@@ -9,11 +9,11 @@ try {
     const createValidTable = () => {
         const fields = new Map();
         // Add all mandatory fields
-        mandatoryTableFields.forEach(field => {
-            fields.set(field, { dataType: 'nvarchar' });
+        mandatoryTableFields.forEach(([fieldName, dataType, isNullable]) => {
+            fields.set(fieldName, { dataType, isNullable });
         });
         // Add a non-mandatory field
-        fields.set('someData', { dataType: 'nvarchar' });
+        fields.set('someData', { dataType: 'nvarchar', isNullable: true });
         return fields;
     };
 
@@ -38,14 +38,14 @@ try {
             ['InvalidTable1', createValidTable()]
         ])
     };
-    const missingField = mandatoryTableFields[0];
-    invalidSchema1.tables.get('InvalidTable1').delete(missingField);
+    const missingFieldName = mandatoryTableFields[0][0]; // Get name from first definition
+    invalidSchema1.tables.get('InvalidTable1').delete(missingFieldName);
 
     try {
         validateSchema(invalidSchema1);
         assert.fail('Should throw error for missing mandatory field');
     } catch (e) {
-        assert.ok(e.message.includes(`missing mandatory field ${missingField}`), 'Error message should mention missing field');
+        assert.ok(e.message.includes(`missing mandatory field ${missingFieldName}`), 'Error message should mention missing field');
         console.log('✓ Passed');
     }
 
@@ -81,6 +81,33 @@ try {
         assert.fail('Should throw error for varchar field');
     } catch (e) {
         assert.ok(e.message.includes('contains varchar field badField'), 'Error message should mention varchar field');
+        console.log('✓ Passed');
+    }
+
+    // Test 5: Incorrect Data Type
+    console.log('Test 5: Incorrect Data Type');
+    const invalidSchema4 = {
+        tables: new Map([
+            ['InvalidTable4', createValidTable()]
+        ])
+    };
+    // Pick a field and change its type. mandatoryTableFields[0] is ['createdByUserID', 'int', false]
+    const [targetField, originalType] = mandatoryTableFields[0];
+    const wrongType = originalType === 'int' ? 'nvarchar' : 'int';
+
+    // We need to update the field definition. Since createValidTable creates a new Map, we can modify it directly.
+    const fieldDef = invalidSchema4.tables.get('InvalidTable4').get(targetField);
+    // Be careful to not mutate the object if it's shared, but here createValidTable creates fresh objects.
+    // Wait, createValidTable sets objects like { dataType, isNullable }.
+    // Let's modify it.
+    fieldDef.dataType = wrongType;
+
+    try {
+        validateSchema(invalidSchema4);
+        assert.fail(`Should throw error for incorrect data type on ${targetField}`);
+    } catch (e) {
+        assert.ok(e.message.includes(`has field ${targetField} of type ${wrongType}, expected ${originalType}`),
+            `Error message should mention type mismatch. Got: ${e.message}`);
         console.log('✓ Passed');
     }
 
