@@ -1,7 +1,7 @@
 const graphqlFields = require('graphql-fields');
 
-//every table in the schema should have these fields
-const mandatoryTableFields = [ //each entry is [fieldName, dataType, isNullable]
+//every table and view in the schema should have these fields
+const mandatoryFields = [ //each entry is [fieldName, dataType, isNullable]
     ['createdByUserID', 'int', false],
     ['createdDate', 'datetime', false],
     ['updatedByUserID', 'int', true], //null if not updated
@@ -143,5 +143,5 @@ module.exports = {
     nonUpdatableFields,
     nonSelectableCommonFields,
     reservedFieldNames,
-    mandatoryTableFields,
+    mandatoryFields,
 }

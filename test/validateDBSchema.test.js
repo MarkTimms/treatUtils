@@ -1,6 +1,6 @@
 const assert = require('assert');
 const validateSchema = require('../db/validateDBSchema');
-const { mandatoryTableFields, reservedFieldNames } = require('../fields');
+const { mandatoryFields, reservedFieldNames } = require('../fields');
 
 console.log('Testing validateDBSchema...\n');
 
@@ -9,7 +9,7 @@ try {
     const createValidTable = () => {
         const fields = new Map();
         // Add all mandatory fields
-        mandatoryTableFields.forEach(([fieldName, dataType, isNullable]) => {
+        mandatoryFields.forEach(([fieldName, dataType, isNullable]) => {
             fields.set(fieldName, { dataType, isNullable });
         });
         // Add a non-mandatory field
@@ -22,6 +22,9 @@ try {
     const validSchema = {
         tables: new Map([
             ['ValidTable', createValidTable()]
+        ]),
+        views: new Map([
+            ['ValidView', createValidTable()]
         ])
     };
     try {
@@ -36,9 +39,10 @@ try {
     const invalidSchema1 = {
         tables: new Map([
             ['InvalidTable1', createValidTable()]
-        ])
+        ]),
+        views: new Map()
     };
-    const missingFieldName = mandatoryTableFields[0][0]; // Get name from first definition
+    const missingFieldName = mandatoryFields[0][0]; // Get name from first definition
     invalidSchema1.tables.get('InvalidTable1').delete(missingFieldName);
 
     try {
@@ -54,7 +58,8 @@ try {
     const invalidSchema2 = {
         tables: new Map([
             ['InvalidTable2', createValidTable()]
-        ])
+        ]),
+        views: new Map()
     };
     const reservedField = reservedFieldNames[0];
     invalidSchema2.tables.get('InvalidTable2').set(reservedField, { dataType: 'nvarchar' });
@@ -72,7 +77,8 @@ try {
     const invalidSchema3 = {
         tables: new Map([
             ['InvalidTable3', createValidTable()]
-        ])
+        ]),
+        views: new Map()
     };
     invalidSchema3.tables.get('InvalidTable3').set('badField', { dataType: 'varchar' });
 
@@ -89,17 +95,14 @@ try {
     const invalidSchema4 = {
         tables: new Map([
             ['InvalidTable4', createValidTable()]
-        ])
+        ]),
+        views: new Map()
     };
-    // Pick a field and change its type. mandatoryTableFields[0] is ['createdByUserID', 'int', false]
-    const [targetField, originalType] = mandatoryTableFields[0];
+    // Pick a field and change its type. mandatoryFields[0] is ['createdByUserID', 'int', false]
+    const [targetField, originalType] = mandatoryFields[0];
     const wrongType = originalType === 'int' ? 'nvarchar' : 'int';
 
-    // We need to update the field definition. Since createValidTable creates a new Map, we can modify it directly.
     const fieldDef = invalidSchema4.tables.get('InvalidTable4').get(targetField);
-    // Be careful to not mutate the object if it's shared, but here createValidTable creates fresh objects.
-    // Wait, createValidTable sets objects like { dataType, isNullable }.
-    // Let's modify it.
     fieldDef.dataType = wrongType;
 
     try {
@@ -110,6 +113,26 @@ try {
             `Error message should mention type mismatch. Got: ${e.message}`);
         console.log('✓ Passed');
     }
+
+    // Test 6: Invalid View (Missing Field)
+    console.log('Test 6: Invalid View (Missing Field)');
+    const invalidSchemaView = {
+        tables: new Map(),
+        views: new Map([
+            ['InvalidView1', createValidTable()]
+        ])
+    };
+    const missingViewField = mandatoryFields[0][0];
+    invalidSchemaView.views.get('InvalidView1').delete(missingViewField);
+
+    try {
+        validateSchema(invalidSchemaView);
+        assert.fail('Should throw error for missing mandatory field in View');
+    } catch (e) {
+        assert.ok(e.message.includes(`missing mandatory field ${missingViewField}`), 'Error message should mention missing field in view');
+        console.log('✓ Passed');
+    }
+
 
 } catch (error) {
     console.error('✗ Test failed: validateDBSchema');

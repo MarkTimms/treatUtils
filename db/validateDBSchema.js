@@ -10,33 +10,45 @@ function validateSchema(dbSchema) {
  * @param {*} dbSchema 
  */
 function validateMandatoryFields(dbSchema) {
-    const mandatoryTableFields = require('../fields').mandatoryTableFields;
-    dbSchema.tables.forEach((tableFields, tableName) => {
-        mandatoryTableFields.forEach(([fieldName, dataType, isNullable]) => {
-            if (!tableFields.has(fieldName)) {
-                throw new Error(`Table ${tableName} is missing mandatory field ${fieldName}`);
-            }
-            const field = tableFields.get(fieldName);
-            if (field.dataType !== dataType) {
-                throw new Error(`Table ${tableName} has field ${fieldName} of type ${field.dataType}, expected ${dataType}`);
-            }
-            if (field.isNullable !== isNullable) {
-                throw new Error(`Table ${tableName} has field ${fieldName} of nullable ${field.isNullable}, expected ${isNullable}`);
-            }
+    const mandatoryFields = require('../fields').mandatoryFields;
+
+    function validate(tables) {
+        tables.forEach((tableFields, tableName) => {
+            mandatoryFields.forEach(([fieldName, dataType, isNullable]) => {
+                if (!tableFields.has(fieldName)) {
+                    throw new Error(`Table ${tableName} is missing mandatory field ${fieldName}`);
+                }
+                const field = tableFields.get(fieldName);
+                if (field.dataType !== dataType) {
+                    throw new Error(`Table ${tableName} has field ${fieldName} of type ${field.dataType}, expected ${dataType}`);
+                }
+                if (field.isNullable !== isNullable) {
+                    throw new Error(`Table ${tableName} has field ${fieldName} of nullable ${field.isNullable}, expected ${isNullable}`);
+                }
+            })
         })
-    })
+    }
+    //validate tables and views both contain the mandatory fields
+    validate(dbSchema.tables);
+    validate(dbSchema.views);
 }
 
 //check no fields are named sort or pagination etc
 function validateReservedFieldNames(dbSchema) {
     const reservedFieldNames = require('../fields').reservedFieldNames;
-    dbSchema.tables.forEach((tableFields, tableName) => {
-        reservedFieldNames.forEach((reservedFieldName) => {
-            if (tableFields.has(reservedFieldName)) {
-                throw new Error(`Table ${tableName} contains reserved field name ${reservedFieldName}`);
-            }
+
+    function validate(tables) {
+        tables.forEach((tableFields, tableName) => {
+            reservedFieldNames.forEach((reservedFieldName) => {
+                if (tableFields.has(reservedFieldName)) {
+                    throw new Error(`Table ${tableName} contains reserved field name ${reservedFieldName}`);
+                }
+            })
         })
-    })
+    }
+    //validate tables and views both contain the reserved field names
+    validate(dbSchema.tables);
+    validate(dbSchema.views);
 }
 
 //check all varchar fields are actually nvarchar
